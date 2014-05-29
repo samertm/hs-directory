@@ -16,3 +16,17 @@ type Person struct {
 var personid int
 
 var PersonStore = make(map[int]*Person)
+
+func AddPerson(name, phone, fromloc, toloc, github, twitter, email, bio string) {
+	p := &Person{Name: name,
+		Phone:   phone,
+		FromLoc: fromloc,
+		ToLoc:   toloc,
+		Github:  github,
+		Twitter: twitter,
+		Email:   email,
+		Bio:     bio,
+		Id:      personid}
+	PersonStore[personid] = p
+	personid++
+}

@@ -50,8 +50,16 @@ var Content = React.createClass({
         this.setState({showAddPerson: true});
     },
     handleAddPerson: function(person) {
-        console.log(person)
         this.setState({showAddPerson: false});
+        $.ajax({
+            url: "person/add",
+            dataType: 'json',
+            type: 'POST',
+            data: {session: getSession(), person: person},
+            error: function(xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
     },
     handleAddPersonCancel: function() {
         this.setState({showAddPerson: false});

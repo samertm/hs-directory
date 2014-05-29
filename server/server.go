@@ -7,8 +7,9 @@ import (
 
 	"errors"
 	"fmt"
-	"github.com/samertm/hs-directory/server/session"
 	"github.com/samertm/hs-directory/secret"
+	"github.com/samertm/hs-directory/server/session"
+	"github.com/samertm/hs-directory/engine"
 	"io"
 	"log"
 )
@@ -104,6 +105,39 @@ func handleAuthed(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func handlePersonAdd(w http.ResponseWriter, req *http.Request) {
+	if req.Method == "POST" {
+		form, err := parseForm(req,
+			"session",
+			"person[name]",
+			"person[phone]",
+			"person[fromloc]",
+			"person[toloc]",
+			"person[github]",
+			"person[twitter]",
+			"person[email]",
+			"person[bio]")
+		if err != nil {
+			// TODO log error
+			fmt.Println("handlePersonAdd", err)
+			return
+		}
+		Session.Get <- form["session"][0]
+		authed := <-Session.Out
+		if authed {
+			engine.AddPerson(
+				form["person[name]"][0],
+				form["person[phone]"][0],
+				form["person[fromloc]"][0],
+				form["person[toloc]"][0],
+				form["person[github]"][0],
+				form["person[twitter]"][0],
+				form["person[email]"][0],
+				form["person[bio]"][0])
+		}
+	}
+}
+
 func ListenAndServe(addr string) {
 	port := ":9444"
 	fmt.Print("Listening on " + addr + port + "\n")
@@ -111,10 +145,10 @@ func ListenAndServe(addr string) {
 	http.HandleFunc("/authed", handleAuthed)
 	http.HandleFunc("/login", handleLogin)
 	http.HandleFunc("/logout", handleLogout)
+	http.HandleFunc("/person/add", handlePersonAdd)
 	http.Handle("/static/",
 		http.StripPrefix("/static/",
 			http.FileServer(http.Dir("./static/"))))
-
 	go Session.Run()
 	err := http.ListenAndServe(addr+port, nil)
 	if err != nil {
