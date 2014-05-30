@@ -50,11 +50,11 @@ var Person = React.createClass({
         var person = <div>
             <h3>{this.props.name}</h3>
             <p>phone={this.props.phone}</p>
-            <p>website={this.props.website}</p>
+            <p>website=<a href={this.props.website}>{this.props.website}</a></p>
             <p>fromloc={this.props.fromloc}</p>
             <p>toloc={this.props.toloc}</p>
-            <p>github={this.props.github}</p>
-            <p>twitter={this.props.twitter}</p>
+            <p>github=<a href={"https://github.com/"+this.props.github}>{this.props.github}</a></p>
+            <p>twitter=<a href={"https://twitter.com/"+this.props.twitter}>{this.props.twitter}</a></p>
             <p>email={this.props.email}</p>
             <p>bio={this.props.bio}</p>
             </div>;
