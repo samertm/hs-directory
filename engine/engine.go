@@ -3,6 +3,7 @@ package engine
 type Person struct {
 	Name    string `json:"name"`
 	Phone   string `json:"phone"`
+	Website string `json:"website"`
 	FromLoc string `json:"fromloc"`
 	ToLoc   string `json:"toloc"`
 	Github  string `json:"github"`
@@ -17,9 +18,10 @@ var personid int
 
 var PersonStore = make([]*Person, 0)
 
-func AddPerson(name, phone, fromloc, toloc, github, twitter, email, bio string) {
+func AddPerson(name, phone, website, fromloc, toloc, github, twitter, email, bio string) {
 	p := &Person{Name: name,
 		Phone:   phone,
+		Website: website,
 		FromLoc: fromloc,
 		ToLoc:   toloc,
 		Github:  github,

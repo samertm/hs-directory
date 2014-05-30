@@ -3,6 +3,7 @@ var PersonAddForm = React.createClass({
     onSubmit: function() {
         var name = this.refs.name.getDOMNode().value.trim();
         var phone = this.refs.phone.getDOMNode().value.trim();
+        var website = this.refs.website.getDOMNode().value.trim();
         var fromloc = this.refs.fromloc.getDOMNode().value.trim();
         var toloc = this.refs.toloc.getDOMNode().value.trim();
         var github = this.refs.github.getDOMNode().value.trim();
@@ -12,6 +13,7 @@ var PersonAddForm = React.createClass({
         this.props.handleAddPerson({
             name: name,
             phone: phone,
+            website: website,
             fromloc: fromloc,
             toloc: toloc,
             github: github,
@@ -30,6 +32,7 @@ var PersonAddForm = React.createClass({
                 <form>
                 <input type="text" placeholder="name (required)" ref="name" />
                 <input type="text" placeholder="phone" ref="phone" />
+                <input type="text" placeholder="website" ref="website" />
                 <input type="text" placeholder="fromloc" ref="fromloc" />
                 <input type="text" placeholder="toloc" ref="toloc" />
                 <input type="text" placeholder="github" ref="github" />
@@ -47,6 +50,7 @@ var Person = React.createClass({
         var person = <div>
             <h3>{this.props.name}</h3>
             <p>phone={this.props.phone}</p>
+            <p>website={this.props.website}</p>
             <p>fromloc={this.props.fromloc}</p>
             <p>toloc={this.props.toloc}</p>
             <p>github={this.props.github}</p>
@@ -63,6 +67,7 @@ var PersonList = React.createClass({
             return <Person
             name={person.name}
             phone={person.phone}
+            website={person.website}
             fromloc={person.fromloc}
             toloc={person.toloc}
             github={person.github}

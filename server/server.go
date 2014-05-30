@@ -111,6 +111,7 @@ func handlePersonAdd(w http.ResponseWriter, req *http.Request) {
 			"session",
 			"person[name]",
 			"person[phone]",
+			"person[website]",
 			"person[fromloc]",
 			"person[toloc]",
 			"person[github]",
@@ -128,6 +129,7 @@ func handlePersonAdd(w http.ResponseWriter, req *http.Request) {
 			engine.AddPerson(
 				form["person[name]"][0],
 				form["person[phone]"][0],
+				form["person[website]"][0],
 				form["person[fromloc]"][0],
 				form["person[toloc]"][0],
 				form["person[github]"][0],
