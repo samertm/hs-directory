@@ -1,7 +1,7 @@
 package server
 
 import (
-	_ "encoding/json"
+	"encoding/json"
 	"net/http"
 	"net/url"
 
@@ -138,6 +138,28 @@ func handlePersonAdd(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func handlePeople(w http.ResponseWriter, req *http.Request) {
+	if req.Method == "POST" {
+		form, err := parseForm(req, "session")
+		if err != nil {
+			// TODO log error
+			fmt.Println("handlePeople", err)
+			return
+		}
+		Session.Get <- form["session"][0]
+		authed := <-Session.Out
+		if authed {
+			data, err := json.Marshal(engine.PersonStore)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			io.WriteString(w, string(data))
+		}
+	}
+}
+			
 func ListenAndServe(addr string) {
 	port := ":9444"
 	fmt.Print("Listening on " + addr + port + "\n")
@@ -146,6 +168,7 @@ func ListenAndServe(addr string) {
 	http.HandleFunc("/login", handleLogin)
 	http.HandleFunc("/logout", handleLogout)
 	http.HandleFunc("/person/add", handlePersonAdd)
+	http.HandleFunc("/people", handlePeople)
 	http.Handle("/static/",
 		http.StripPrefix("/static/",
 			http.FileServer(http.Dir("./static/"))))

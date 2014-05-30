@@ -42,12 +42,70 @@ var PersonAddForm = React.createClass({
         );
     }
 });
+var Person = React.createClass({
+    render: function() {
+        var person = <div>
+            <h3>{this.props.name}</h3>
+            <p>phone={this.props.phone}</p>
+            <p>fromloc={this.props.fromloc}</p>
+            <p>toloc={this.props.toloc}</p>
+            <p>github={this.props.github}</p>
+            <p>twitter={this.props.twitter}</p>
+            <p>email={this.props.email}</p>
+            <p>bio={this.props.bio}</p>
+            </div>;
+        return person;
+    }
+});
+var PersonList = React.createClass({
+    render: function() {
+        var personNodes = this.props.data.map(function (person) {
+            return <Person
+            name={person.name}
+            phone={person.phone}
+            fromloc={person.fromloc}
+            toloc={person.toloc}
+            github={person.github}
+            twitter={person.twitter}
+            email={person.email}
+            bio={person.bio}
+                />;
+        });
+        return (
+                <div className="personList">
+                {personNodes}
+            </div>
+        );
+    }
+});    
 var Content = React.createClass({
     getInitialState: function() {
-        return {showAddPerson: false};
+        return {showAddPerson: false, people: []};
     },
     onAddPerson: function() {
         this.setState({showAddPerson: true});
+    },
+    loadPeopleFromServer: function() {
+        $.ajax({
+            url: "people",
+            dataType: 'json',
+            type: 'POST',
+            data: {session: getSession()},
+            success: function(people) {
+                if (people !== null) {
+                    this.setState({people: people});
+                } else {
+                    this.setState({people: []});
+                }
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
+    componentWillMount: function() {
+        this.loadPeopleFromServer();
+        setInterval(this.loadPeopleFromServer, this.props.pollInterval);
     },
     handleAddPerson: function(person) {
         this.setState({showAddPerson: false});
@@ -69,11 +127,12 @@ var Content = React.createClass({
         var addPersonButton = <button onClick={this.onAddPerson}>add person</button>;
         return (
                 <div>
-                <p>YAY :D</p> {logoutButton}
+                {logoutButton}
             {this.state.showAddPerson ?
              <PersonAddForm handleAddPerson={this.handleAddPerson}
              handleAddPersonCancel={this.handleAddPersonCancel} /> :
              addPersonButton}
+                <PersonList data={this.state.people} />
                 </div>
         );
     }
@@ -146,13 +205,13 @@ var Gatekeeper = React.createClass({
             </form>
             </div>;
         if (this.state.loggedin) {
-            return <Content handleLogout={this.handleLogout} />
+            return <Content handleLogout={this.handleLogout} pollInterval={2000} />
         } else {
             return login;
         }
     }
 });
 React.renderComponent(
-        <Gatekeeper pollInterval={2000} />,
+        <Gatekeeper />,
     document.getElementById("content")
 );
