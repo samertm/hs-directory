@@ -2,16 +2,16 @@ package server
 
 import (
 	"encoding/json"
-	"net/http"
-	"net/url"
-
 	"errors"
 	"fmt"
+	"github.com/samertm/hs-directory/engine"
 	"github.com/samertm/hs-directory/secret"
 	"github.com/samertm/hs-directory/server/session"
-	"github.com/samertm/hs-directory/engine"
 	"io"
 	"log"
+	"net/http"
+	"net/url"
+	"strconv"
 )
 
 // warning: modifies req by calling req.ParseForm()
@@ -125,18 +125,19 @@ func handlePersonAdd(w http.ResponseWriter, req *http.Request) {
 		}
 		Session.Get <- form["session"][0]
 		authed := <-Session.Out
-		if authed {
-			engine.AddPerson(
-				form["person[name]"][0],
-				form["person[phone]"][0],
-				form["person[website]"][0],
-				form["person[fromloc]"][0],
-				form["person[toloc]"][0],
-				form["person[github]"][0],
-				form["person[twitter]"][0],
-				form["person[email]"][0],
-				form["person[bio]"][0])
+		if !authed {
+			return
 		}
+		engine.AddPerson(
+			form["person[name]"][0],
+			form["person[phone]"][0],
+			form["person[website]"][0],
+			form["person[fromloc]"][0],
+			form["person[toloc]"][0],
+			form["person[github]"][0],
+			form["person[twitter]"][0],
+			form["person[email]"][0],
+			form["person[bio]"][0])
 	}
 }
 
@@ -150,18 +151,68 @@ func handlePeople(w http.ResponseWriter, req *http.Request) {
 		}
 		Session.Get <- form["session"][0]
 		authed := <-Session.Out
-		if authed {
-			data, err := json.Marshal(engine.PersonStore)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			w.Header().Set("Content-Type", "application/json")
-			io.WriteString(w, string(data))
+		if !authed {
+			return
 		}
+		data, err := json.Marshal(engine.PersonStore)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		io.WriteString(w, string(data))
 	}
 }
-			
+
+func handlePersonEdit(w http.ResponseWriter, req *http.Request) {
+	if req.Method == "POST" {
+		form, err := parseForm(req,
+			"session",
+			"personid",
+			"person[name]",
+			"person[phone]",
+			"person[website]",
+			"person[fromloc]",
+			"person[toloc]",
+			"person[github]",
+			"person[twitter]",
+			"person[email]",
+			"person[bio]")
+		if err != nil {
+			// TODO log error
+			fmt.Println("handlePersonEdit", err)
+			return
+		}
+		Session.Get <- form["session"][0]
+		authed := <-Session.Out
+		if !authed {
+			return
+		}
+		id, err := strconv.Atoi(form["personid"][0])
+		if err != nil {
+			// TODO log error
+			fmt.Println("handlePersonEdit", err)
+			return
+		}
+		person, err := engine.FindPerson(id)
+		if err != nil {
+			// TODO log error
+			fmt.Println("handlePersonEdit", err)
+			return
+		}
+		person.Name = form["person[name]"][0]
+		person.Phone = form["person[phone]"][0]
+		person.Website = form["person[website]"][0]
+		person.FromLoc = form["person[fromloc]"][0]
+		person.ToLoc = form["person[toloc]"][0]
+		person.Github = form["person[github]"][0]
+		person.Twitter = form["person[twitter]"][0]
+		person.Email = form["person[email]"][0]
+		person.Bio = form["person[bio]"][0]
+		return
+	}
+}
+
 func ListenAndServe(addr string) {
 	port := ":9444"
 	fmt.Print("Listening on " + addr + port + "\n")
@@ -170,6 +221,7 @@ func ListenAndServe(addr string) {
 	http.HandleFunc("/login", handleLogin)
 	http.HandleFunc("/logout", handleLogout)
 	http.HandleFunc("/person/add", handlePersonAdd)
+	http.HandleFunc("/person/edit", handlePersonEdit)
 	http.HandleFunc("/people", handlePeople)
 	http.Handle("/static/",
 		http.StripPrefix("/static/",

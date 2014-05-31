@@ -1,5 +1,9 @@
 package engine
 
+import (
+	"errors"
+)
+
 type Person struct {
 	Name    string `json:"name"`
 	Phone   string `json:"phone"`
@@ -31,4 +35,16 @@ func AddPerson(name, phone, website, fromloc, toloc, github, twitter, email, bio
 		Id:      personid}
 	PersonStore = append(PersonStore, p)
 	personid++
+}
+
+func FindPerson(id int) (p *Person, err error) {
+	for _, person := range PersonStore {
+		if person.Id == id {
+			p = person
+			return
+		}
+	}
+	// TODO improve error message
+	err = errors.New("Person not found")
+	return
 }
