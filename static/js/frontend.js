@@ -30,15 +30,15 @@ var PersonAddForm = React.createClass({
     render: function() {
         return (
                 <form>
-                <input type="text" placeholder="name (required)" ref="name" />
-                <input type="text" placeholder="phone" ref="phone" />
-                <input type="text" placeholder="website" ref="website" />
-                <input type="text" placeholder="fromloc" ref="fromloc" />
-                <input type="text" placeholder="toloc" ref="toloc" />
-                <input type="text" placeholder="github" ref="github" />
-                <input type="text" placeholder="twitter" ref="twitter" />
-                <input type="text" placeholder="email" ref="email" />
-                <input type="text" placeholder="bio" ref="bio" />
+                <input type="text" placeholder="name (required)" ref="name" /><br />
+                <input type="text" placeholder="phone" ref="phone" /><br />
+                <input type="text" placeholder="website" ref="website" /><br />
+                <input type="text" placeholder="fromloc" ref="fromloc" /><br />
+                <input type="text" placeholder="toloc" ref="toloc" /><br />
+                <input type="text" placeholder="github" ref="github" /><br />
+                <input type="text" placeholder="twitter" ref="twitter" /><br />
+                <input type="text" placeholder="email" ref="email" /><br />
+                <textarea placeholder="bio" ref="bio" /><br />
                 <button onClick={this.onSubmit}>add person</button>
                 <button onClick={this.onCancel}>cancel</button>
                 </form>
