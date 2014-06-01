@@ -48,3 +48,15 @@ func FindPerson(id int) (p *Person, err error) {
 	err = errors.New("Person not found")
 	return
 }
+
+func DeletePerson(id int) (err error) {
+	for i, p := range PersonStore {
+		if p.Id == id {
+			// delete person
+			PersonStore = append(PersonStore[:i], PersonStore[i+1:]...)
+			return
+		}
+	}
+	err = errors.New("Person not found")
+	return
+}

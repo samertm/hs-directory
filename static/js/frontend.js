@@ -82,6 +82,9 @@ var Person = React.createClass({
         this.setState({showedit: false});
         return false;
     },
+    onDelete: function() {
+        this.props.onDelete({id: this.props.id});
+    },
     render: function() {
         var person = <div>
             <h3>{this.props.name}</h3>
@@ -94,6 +97,7 @@ var Person = React.createClass({
             <p>email={this.props.email}</p>
             <p>bio={this.props.bio}</p>
             <button onClick={this.onEditButton}>edit</button>
+            <button onClick={this.onDelete}>delete</button>
             </div>;
         var editform = <form>
             <input type="text" placeholder="name (required)" ref="name" defaultValue={this.props.name} /><br />
@@ -116,6 +120,17 @@ var Person = React.createClass({
     }
 });
 var PersonList = React.createClass({
+    handleDeletePerson: function(person) {
+        $.ajax({
+            url: "person/delete",
+            dataType: 'json',
+            type: 'POST',
+            data: {session: getSession(), personid: person.id},
+            error: function(xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
     handleEditPerson: function(person) {
         $.ajax({
             url: "person/edit",
@@ -142,6 +157,7 @@ var PersonList = React.createClass({
             bio={person.bio}
             id={person.id}
             onEditPerson={that.handleEditPerson}
+            onDelete={that.handleDeletePerson}
                 />;
         });
         return (

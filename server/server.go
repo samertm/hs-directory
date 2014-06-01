@@ -213,6 +213,33 @@ func handlePersonEdit(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func handlePersonDelete(w http.ResponseWriter, req *http.Request) {
+	if req.Method == "POST" {
+		form, err := parseForm(req, "session", "personid")
+		if err != nil {
+			// TODO log error
+			fmt.Println("handlePersonDelete", err)
+			return
+		}
+		Session.Get <- form["session"][0]
+		authed := <-Session.Out
+		if !authed {
+			return
+		}
+		id, err := strconv.Atoi(form["personid"][0])
+		if err != nil {
+			// TODO log error
+			fmt.Println("handlePersonEdit", err)
+			return
+		}
+		err = engine.DeletePerson(id)
+		if err != nil {
+			fmt.Println("handlePersonDelete", err)
+			return
+		}
+	}
+}
+
 func ListenAndServe(addr string) {
 	port := ":9444"
 	fmt.Print("Listening on " + addr + port + "\n")
@@ -222,6 +249,7 @@ func ListenAndServe(addr string) {
 	http.HandleFunc("/logout", handleLogout)
 	http.HandleFunc("/person/add", handlePersonAdd)
 	http.HandleFunc("/person/edit", handlePersonEdit)
+	http.HandleFunc("/person/delete", handlePersonDelete)
 	http.HandleFunc("/people", handlePeople)
 	http.Handle("/static/",
 		http.StripPrefix("/static/",
