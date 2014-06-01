@@ -168,7 +168,7 @@ func handlePersonEdit(w http.ResponseWriter, req *http.Request) {
 	if req.Method == "POST" {
 		form, err := parseForm(req,
 			"session",
-			"personid",
+			"person[id]",
 			"person[name]",
 			"person[phone]",
 			"person[website]",
@@ -188,7 +188,7 @@ func handlePersonEdit(w http.ResponseWriter, req *http.Request) {
 		if !authed {
 			return
 		}
-		id, err := strconv.Atoi(form["personid"][0])
+		id, err := strconv.Atoi(form["person[id]"][0])
 		if err != nil {
 			// TODO log error
 			fmt.Println("handlePersonEdit", err)

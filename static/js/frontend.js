@@ -46,6 +46,42 @@ var PersonAddForm = React.createClass({
     }
 });
 var Person = React.createClass({
+    getInitialState: function() {
+        return {showedit: false};
+    },
+    onEdit: function() {
+        this.setState({showedit: false});
+        var name = this.refs.name.getDOMNode().value.trim();
+        var phone = this.refs.phone.getDOMNode().value.trim();
+        var website = this.refs.website.getDOMNode().value.trim();
+        var fromloc = this.refs.fromloc.getDOMNode().value.trim();
+        var toloc = this.refs.toloc.getDOMNode().value.trim();
+        var github = this.refs.github.getDOMNode().value.trim();
+        var twitter = this.refs.twitter.getDOMNode().value.trim();
+        var email = this.refs.email.getDOMNode().value.trim();
+        var bio = this.refs.bio.getDOMNode().value.trim();
+        this.props.onEditPerson({
+            id: this.props.id,
+            name: name,
+            phone: phone,
+            website: website,
+            fromloc: fromloc,
+            toloc: toloc,
+            github: github,
+            twitter: twitter,
+            email: email,
+            bio: bio
+        });
+        return false;
+    },
+    onEditButton: function() {
+        this.setState({showedit: true});
+        return false;
+    },
+    onCancelEdit: function() {
+        this.setState({showedit: false});
+        return false;
+    },
     render: function() {
         var person = <div>
             <h3>{this.props.name}</h3>
@@ -57,12 +93,42 @@ var Person = React.createClass({
             <p>twitter=<a href={"https://twitter.com/"+this.props.twitter}>{this.props.twitter}</a></p>
             <p>email={this.props.email}</p>
             <p>bio={this.props.bio}</p>
+            <button onClick={this.onEditButton}>edit</button>
             </div>;
-        return person;
+        var editform = <form>
+            <input type="text" placeholder="name (required)" ref="name" defaultValue={this.props.name} /><br />
+            <input type="text" placeholder="phone" ref="phone" defaultValue={this.props.phone} /><br />
+            <input type="text" placeholder="website" ref="website" defaultValue={this.props.website} /><br />
+            <input type="text" placeholder="fromloc" ref="fromloc" defaultValue={this.props.fromloc} /><br />
+            <input type="text" placeholder="toloc" ref="toloc" defaultValue={this.props.toloc} /><br />
+            <input type="text" placeholder="github" ref="github" defaultValue={this.props.github} /><br />
+            <input type="text" placeholder="twitter" ref="twitter" defaultValue={this.props.twitter} /><br />
+            <input type="text" placeholder="email" ref="email" defaultValue={this.props.email} /><br />
+            <textarea placeholder="bio" ref="bio" defaultValue={this.props.bio} /><br />
+            <button onClick={this.onEdit}>edit person</button>
+            <button onClick={this.onCancelEdit}>cancel</button>
+            </form>;
+        if (this.state.showedit == true) {
+            return editform;
+        } else {
+            return person;
+        }
     }
 });
 var PersonList = React.createClass({
+    handleEditPerson: function(person) {
+        $.ajax({
+            url: "person/edit",
+            dataType: 'json',
+            type: 'POST',
+            data: {session: getSession(), person: person},
+            error: function(xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
     render: function() {
+        var that = this;
         var personNodes = this.props.data.map(function (person) {
             return <Person
             name={person.name}
@@ -74,6 +140,8 @@ var PersonList = React.createClass({
             twitter={person.twitter}
             email={person.email}
             bio={person.bio}
+            id={person.id}
+            onEditPerson={that.handleEditPerson}
                 />;
         });
         return (
