@@ -62,8 +62,7 @@ func handleLogin(w http.ResponseWriter, req *http.Request) {
 	if req.Method == "POST" {
 		form, err := parseForm(req, "session", "password")
 		if err != nil {
-			// TODO log error
-			fmt.Println("handleLogin", err)
+			log.Println("handleLogin", err)
 			return
 		}
 		if form["password"][0] == SECRETPASSWORD {
@@ -79,8 +78,7 @@ func handleLogout(w http.ResponseWriter, req *http.Request) {
 	if req.Method == "POST" {
 		form, err := parseForm(req, "session")
 		if err != nil {
-			// TODO log error
-			fmt.Println("handleLogout", err)
+			log.Println("handleLogout", err)
 			return
 		}
 		Session.Delete <- form["session"][0]
@@ -91,8 +89,7 @@ func handleAuthed(w http.ResponseWriter, req *http.Request) {
 	if req.Method == "POST" {
 		form, err := parseForm(req, "session")
 		if err != nil {
-			// TODO log error
-			fmt.Println("handleLogout", err)
+			log.Println("handleLogout", err)
 			return
 		}
 		Session.Get <- form["session"][0]
@@ -119,8 +116,7 @@ func handlePersonAdd(w http.ResponseWriter, req *http.Request) {
 			"person[email]",
 			"person[bio]")
 		if err != nil {
-			// TODO log error
-			fmt.Println("handlePersonAdd", err)
+			log.Println("handlePersonAdd", err)
 			return
 		}
 		Session.Get <- form["session"][0]
@@ -145,8 +141,7 @@ func handlePeople(w http.ResponseWriter, req *http.Request) {
 	if req.Method == "POST" {
 		form, err := parseForm(req, "session")
 		if err != nil {
-			// TODO log error
-			fmt.Println("handlePeople", err)
+			log.Println("handlePeople", err)
 			return
 		}
 		Session.Get <- form["session"][0]
@@ -156,7 +151,7 @@ func handlePeople(w http.ResponseWriter, req *http.Request) {
 		}
 		data, err := json.Marshal(engine.PersonStore)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -179,8 +174,7 @@ func handlePersonEdit(w http.ResponseWriter, req *http.Request) {
 			"person[email]",
 			"person[bio]")
 		if err != nil {
-			// TODO log error
-			fmt.Println("handlePersonEdit", err)
+			log.Println("handlePersonEdit", err)
 			return
 		}
 		Session.Get <- form["session"][0]
@@ -190,14 +184,12 @@ func handlePersonEdit(w http.ResponseWriter, req *http.Request) {
 		}
 		id, err := strconv.Atoi(form["person[id]"][0])
 		if err != nil {
-			// TODO log error
-			fmt.Println("handlePersonEdit", err)
+			log.Println("handlePersonEdit", err)
 			return
 		}
 		person, err := engine.FindPerson(id)
 		if err != nil {
-			// TODO log error
-			fmt.Println("handlePersonEdit", err)
+			log.Println("handlePersonEdit", err)
 			return
 		}
 		person.Name = form["person[name]"][0]
@@ -217,8 +209,7 @@ func handlePersonDelete(w http.ResponseWriter, req *http.Request) {
 	if req.Method == "POST" {
 		form, err := parseForm(req, "session", "personid")
 		if err != nil {
-			// TODO log error
-			fmt.Println("handlePersonDelete", err)
+			log.Println("handlePersonDelete", err)
 			return
 		}
 		Session.Get <- form["session"][0]
@@ -228,13 +219,12 @@ func handlePersonDelete(w http.ResponseWriter, req *http.Request) {
 		}
 		id, err := strconv.Atoi(form["personid"][0])
 		if err != nil {
-			// TODO log error
-			fmt.Println("handlePersonEdit", err)
+			log.Println("handlePersonEdit", err)
 			return
 		}
 		err = engine.DeletePerson(id)
 		if err != nil {
-			fmt.Println("handlePersonDelete", err)
+			log.Println("handlePersonDelete", err)
 			return
 		}
 	}
