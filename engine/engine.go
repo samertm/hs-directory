@@ -2,6 +2,7 @@ package engine
 
 import (
 	"errors"
+	_ "github.com/samertm/hs-directory/engine/database"
 )
 
 type Person struct {
