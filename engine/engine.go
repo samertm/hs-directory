@@ -2,28 +2,20 @@ package engine
 
 import (
 	"errors"
+	"github.com/samertm/hs-directory/engine/database"
+	"github.com/samertm/hs-directory/engine/person"
 )
 
-type Person struct {
-	Name    string `json:"name"`
-	Phone   string `json:"phone"`
-	Website string `json:"website"`
-	FromLoc string `json:"fromloc"`
-	ToLoc   string `json:"toloc"`
-	Github  string `json:"github"`
-	Twitter string `json:"twitter"`
-	Email   string `json:"email"`
-	Bio     string `json:"bio"`
-	// globally unique id
-	Id int `json:"id"`
+var personid int
+var PersonStore []*person.Person
+
+func init() {
+	PersonStore = database.Load()
 }
 
-var personid int
-
-var PersonStore = make([]*Person, 0)
-
-func AddPerson(name, phone, website, fromloc, toloc, github, twitter, email, bio string) {
-	p := &Person{Name: name,
+func AddPerson(name, phone, website, fromloc, toloc,
+	github, twitter, email, bio string) {
+	p := &person.Person{Name: name,
 		Phone:   phone,
 		Website: website,
 		FromLoc: fromloc,
@@ -34,11 +26,11 @@ func AddPerson(name, phone, website, fromloc, toloc, github, twitter, email, bio
 		Bio:     bio,
 		Id:      personid}
 	PersonStore = append(PersonStore, p)
-	DbAdd(*p)
+	database.Add(*p)
 	personid++
 }
 
-func FindPerson(id int) (p *Person, err error) {
+func FindPerson(id int) (p *person.Person, err error) {
 	for _, person := range PersonStore {
 		if person.Id == id {
 			p = person
