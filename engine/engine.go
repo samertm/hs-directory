@@ -2,7 +2,6 @@ package engine
 
 import (
 	"errors"
-	_ "github.com/samertm/hs-directory/engine/database"
 )
 
 type Person struct {
@@ -35,6 +34,7 @@ func AddPerson(name, phone, website, fromloc, toloc, github, twitter, email, bio
 		Bio:     bio,
 		Id:      personid}
 	PersonStore = append(PersonStore, p)
+	DbAdd(*p)
 	personid++
 }
 
